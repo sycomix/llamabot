@@ -18,12 +18,11 @@ def blogging_bot():
 
     :return: The blogging bot.
     """
-    bot = SimpleBot(
+    return SimpleBot(
         "You are an expert blogger. Whenever you use hashtags, "
         "they are always lowercase.",
         temperature=0.3,
     )
-    return bot
 
 
 @prompt

@@ -35,8 +35,7 @@ def sembr_bot():
 
     :return: The SEMBR bot.
     """
-    bot = SimpleBot(sembr_bot_system_prompt())
-    return bot
+    return SimpleBot(sembr_bot_system_prompt())
 
 
 @prompt

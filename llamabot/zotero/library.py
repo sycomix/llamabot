@@ -67,7 +67,7 @@ class ZoteroLibrary:
 
         :return: A list of keys.
         """
-        return [i for i in self.library]
+        return list(self.library)
 
     def to_json(self, dir: Path, has_pdf=True):
         """Save the library to a JSON file.
@@ -95,9 +95,7 @@ class ZoteroLibrary:
             title = v.info["data"]["title"]
             mapping[k] = title
 
-        if inverse:
-            return {v: k for k, v in mapping.items()}
-        return mapping
+        return {v: k for k, v in mapping.items()} if inverse else mapping
 
 
 @dataclass
@@ -155,9 +153,7 @@ class ZoteroItem:
 
         :return: True if this item has a PDF, False otherwise.
         """
-        if self.get("links.attachment.attachmentType") == "application/pdf":
-            return True
-        return False
+        return self.get("links.attachment.attachmentType") == "application/pdf"
 
     def get(self, key_string, default_value=None):
         try:

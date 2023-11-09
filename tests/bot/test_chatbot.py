@@ -22,7 +22,6 @@ def test_chatbot_initialization(system_prompt):
         This is a pytest fixture.
     """
     ChatBot(system_prompt)
-    assert True
 
 
 def test_chatbot_repr(system_prompt):

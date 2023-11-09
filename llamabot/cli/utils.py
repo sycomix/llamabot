@@ -90,6 +90,6 @@ def exit_if_asked(query: str):
     :raises Exit: If the user types "exit" or "quit".
     """
     query = query.strip(" ").strip("\n").lower()
-    if query in ["exit", "quit"]:
+    if query in {"exit", "quit"}:
         print("It was fun chatting! Have a great day!")
         raise typer.Exit(0)

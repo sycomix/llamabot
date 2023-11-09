@@ -167,9 +167,7 @@ If you cannot answer something, respond by saying that you don't know.
         # the maximum number of tokens - the response and history tokens.
         source_nodes = retriever.retrieve(query)
 
-        faux_chat_history = []
-        faux_chat_history.append(SystemMessage(content=self.system_message))
-
+        faux_chat_history = [SystemMessage(content=self.system_message)]
         # Step 2: Grab as many messages from chat history
         # as permissible by the history_tokens budget,
         enc = tiktoken.encoding_for_model("gpt-4")
@@ -226,7 +224,7 @@ If you cannot answer something, respond by saying that you don't know.
         :param path: The path to save the QueryBot index.
         """
         path = Path(path)
-        if not path.suffix == ".json":
+        if path.suffix != ".json":
             path = path.with_suffix(".json")
         self.vector_index.save_to_disk(path)
 
@@ -249,8 +247,7 @@ If you cannot answer something, respond by saying that you don't know.
         retriever = VectorIndexRetriever(
             index=self.vector_index, similarity_top_k=similarity_top_k
         )
-        source_nodes = retriever.retrieve(query)
-        return source_nodes
+        return retriever.retrieve(query)
 
 
 # @validate_call
@@ -266,8 +263,9 @@ def load_index(persist_dir: Path, service_context: ServiceContext):
         vector_store=SimpleVectorStore.from_persist_dir(persist_dir=persist_dir),
         index_store=SimpleIndexStore.from_persist_dir(persist_dir=persist_dir),
     )
-    index = load_index_from_storage(storage_context, service_context=service_context)
-    return index
+    return load_index_from_storage(
+        storage_context, service_context=service_context
+    )
 
 
 def make_default_storage_context() -> StorageContext:
@@ -275,12 +273,11 @@ def make_default_storage_context() -> StorageContext:
 
     :returns: A storage context.
     """
-    storage_context = StorageContext.from_defaults(
+    return StorageContext.from_defaults(
         docstore=SimpleDocumentStore(),
         vector_store=SimpleVectorStore(),
         index_store=SimpleIndexStore(),
     )
-    return storage_context
 
 
 def make_vector_index(
@@ -350,7 +347,7 @@ def make_or_load_vector_index(
     file_hash.update(str(chunk_sizes).encode())
     file_hash.update(str(chunk_overlap).encode())
     file_hash_hexdigest = file_hash.hexdigest()
-    logger.info(f"File hash: {file_hash_hexdigest[0:8]}")
+    logger.info(f"File hash: {file_hash_hexdigest[:8]}")
 
     # Make persist_dir based on the file hash's hexdigest.
     persist_dir = CACHE_DIR / file_hash_hexdigest

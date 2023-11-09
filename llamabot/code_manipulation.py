@@ -44,20 +44,21 @@ def replace_object_in_file(
             "Please ensure the source file has valid Python syntax."
         ) from e
 
+
+
     class ObjectReplacer(ast.NodeTransformer):
         """Internal class used to replace an object in a Python source file."""
 
         def visit_FunctionDef(
-            self, node: ast.FunctionDef
-        ) -> Union[ast.FunctionDef, Any]:
+                    self, node: ast.FunctionDef
+                ) -> Union[ast.FunctionDef, Any]:
             """Replace the object with the specified name.
 
             :param node: The node to visit.
             :return: The new node.
             """
             if node.name == object_name:
-                new_node = ast.parse(new_object_definition).body[0]
-                return new_node
+                return ast.parse(new_object_definition).body[0]
             return node
 
         def visit_ClassDef(self, node: ast.ClassDef) -> Union[ast.ClassDef, Any]:
@@ -67,9 +68,9 @@ def replace_object_in_file(
             :return: The new node.
             """
             if node.name == object_name:
-                new_node = ast.parse(new_object_definition).body[0]
-                return new_node
+                return ast.parse(new_object_definition).body[0]
             return node
+
 
     replacer = ObjectReplacer()
     new_tree = replacer.visit(tree)
@@ -221,7 +222,7 @@ def get_function_source(file_path: Union[str, Path], function_name: str) -> str:
             f"File not found. Please provide a valid file path: {file_path}"
         )
 
-    if not file_path.suffix == ".py":
+    if file_path.suffix != ".py":
         raise ValueError(f"Invalid file type. Please provide a .py file: {file_path}")
 
     sys.path.insert(0, str(file_path.parent))
@@ -251,10 +252,10 @@ def should_ignore_file(file_path: Path, gitignore_patterns: list[str]) -> bool:
     :param gitignore_patterns: A list of patterns to ignore.
     :return: True if the file should be ignored, False otherwise.
     """
-    for pattern in gitignore_patterns:
-        if fnmatch.fnmatch(file_path.name, pattern):
-            return True
-    return False
+    return any(
+        fnmatch.fnmatch(file_path.name, pattern)
+        for pattern in gitignore_patterns
+    )
 
 
 def show_directory_tree(
@@ -319,15 +320,12 @@ def show_directory_tree(
         with gitignore_path.open("r") as gitignore_file:
             gitignore_patterns = gitignore_file.read().splitlines()
 
-    # Prepare the printed text
-    printed_text = ""
-
-    # Print files
-    for file in files:
-        if ignore_gitignore and should_ignore_file(file, gitignore_patterns):
-            continue
-        printed_text += "|" + "    " * indent + "|-- " + file.name + "\n"
-
+    printed_text = "".join(
+        "|" + "    " * indent + "|-- " + file.name + "\n"
+        for file in files
+        if not ignore_gitignore
+        or not should_ignore_file(file, gitignore_patterns)
+    )
     # Recursively print subdirectories
     for folder in folders:
         if ignore_dirs is not None and any(
@@ -360,15 +358,14 @@ def get_git_diff(repo_path: Optional[Union[str, Path]] = None) -> str:
         raise ValueError("Please provide a valid path to a git repository.") from e
 
     if repo.is_dirty():
-        if repo.index.diff("HEAD"):
-            try:
-                diff = repo.git.diff("--cached")
-            except GitCommandError as e:
-                raise ValueError(
-                    "Please ensure that the git repository has staged changes."
-                ) from e
-        else:
+        if not repo.index.diff("HEAD"):
             return ""
+        try:
+            diff = repo.git.diff("--cached")
+        except GitCommandError as e:
+            raise ValueError(
+                "Please ensure that the git repository has staged changes."
+            ) from e
     else:
         try:
             diff = repo.git.diff()

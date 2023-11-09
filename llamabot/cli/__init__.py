@@ -81,7 +81,7 @@ def chat(save: bool = typer.Option(True, help="Whether to save the chat to a fil
 def clear_cache():
     """Clear the Llamabot cache."""
     CACHE_DIR = Path.home() / ".llamabot" / "cache"
-    os.system("rm -rf {}".format(CACHE_DIR))
+    os.system(f"rm -rf {CACHE_DIR}")
 
 
 if __name__ == "__main__":
