@@ -186,6 +186,4 @@ class ChatBot:
             main=main,
             main_max_width=f"{width}px",
         )
-        if show:
-            return app.show()
-        return app
+        return app.show() if show else app

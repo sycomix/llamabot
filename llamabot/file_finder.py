@@ -27,9 +27,10 @@ def recursive_find(root_dir: Path, file_extension: str) -> List[Path]:
     python_files = []
 
     for root, dirnames, filenames in os.walk(root_dir):
-        for filename in fnmatch.filter(filenames, f"*{file_extension}"):
-            python_files.append(Path(root) / filename)
-
+        python_files.extend(
+            Path(root) / filename
+            for filename in fnmatch.filter(filenames, f"*{file_extension}")
+        )
     return python_files
 
 

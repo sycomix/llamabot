@@ -150,7 +150,5 @@ def autorecord(prompt: str, response: str):
     :param prompt: The human prompt.
     :param response: A the response from the bot.
     """
-    # Log the response.
-    prompt_recorder: Optional[PromptRecorder] = prompt_recorder_var.get(None)
-    if prompt_recorder:
+    if prompt_recorder := prompt_recorder_var.get(None):
         prompt_recorder.log(prompt, response)

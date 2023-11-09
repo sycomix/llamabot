@@ -47,15 +47,14 @@ def get_github_diff(pr_url: str):
     :raises ValueError: If the request fails.
     """
     if not pr_url.endswith(".diff"):
-        pr_url = pr_url + ".diff"
+        pr_url += ".diff"
 
     r = requests.get(pr_url)
     # Check if the request returns a 200 status
     if r.status_code != 200:
         raise ValueError(f"Request failed with status code {r.status_code}")
 
-    content = r.text
-    return content
+    return r.text
 
 
 @prompt

@@ -69,5 +69,4 @@ def split_document(
     splitter = TokenTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     sub_texts = splitter.split_text(doc.text)
 
-    sub_docs = [Document(text=t) for t in sub_texts]
-    return sub_docs
+    return [Document(text=t) for t in sub_texts]

@@ -17,12 +17,12 @@ class PaperTitleCompleter(Completer):
         :param complete_event: The event that triggered the completion.
         :return: A list of completions. Naomi mama
         """
-        text = document.text_before_cursor
         completions = []
 
-        if text:
-            for title in self.paper_titles:
-                if all(word.lower() in title.lower() for word in text.split()):
-                    completions.append(Completion(title, start_position=-len(text)))
-
+        if text := document.text_before_cursor:
+            completions.extend(
+                Completion(title, start_position=-len(text))
+                for title in self.paper_titles
+                if all(word.lower() in title.lower() for word in text.split())
+            )
         return completions

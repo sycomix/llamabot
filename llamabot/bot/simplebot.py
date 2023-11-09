@@ -120,6 +120,4 @@ class SimpleBot:
             main_max_width="768px",
         )
         app = pn.panel(app)
-        if show:
-            return app.show()
-        return app
+        return app.show() if show else app
